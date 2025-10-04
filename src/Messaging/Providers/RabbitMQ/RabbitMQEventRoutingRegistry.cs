@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 using Bsfranca2.Core;
 using Bsfranca2.Messaging.Configurations;
 using Bsfranca2.Messaging.Contracts;
@@ -11,29 +14,29 @@ internal sealed class RabbitMQEventRoutingRegistry : IEventRoutingRegistry
     private readonly Dictionary<Type, EventRouting> _routingByType;
     private readonly Dictionary<string, Type> _typeByName;
 
-    public RabbitMQEventRoutingRegistry(ILogger<RabbitMQEventRoutingRegistry> logger)
+    public RabbitMQEventRoutingRegistry(
+        ILogger<RabbitMQEventRoutingRegistry> logger,
+        MessagingOptions options)
     {
         Dictionary<Type, EventRouting> routingByType = [];
         Dictionary<string, Type> typeByName = [];
 
-        List<Type> eventTypes = RabbitMQMessagingTopology.GetAllEventTypes().ToList();
-
-        foreach (Type eventType in eventTypes)
+        foreach ((Type eventType, EventRouting routing) in options.EventRouting)
         {
-            EventRouting routing = RabbitMQMessagingTopology.EventMappings[eventType];
             routingByType[eventType] = routing;
 
             if (!typeByName.TryAdd(eventType.Name, eventType))
             {
+                Type conflictingType = typeByName[eventType.Name];
                 throw new InvalidOperationException(
-                    $"Event type name collision. The name '{eventType.Name}' is used by both '{typeByName[eventType.Name].FullName}' and '{eventType.FullName}'.");
+                    $"Event type name collision. The name '{eventType.Name}' is used by both '{conflictingType.FullName}' and '{eventType.FullName}'.");
             }
         }
 
         _routingByType = routingByType;
         _typeByName = typeByName;
 
-        logger.LogDebug("Successfully registered {EventCount} event types.", eventTypes.Count);
+        logger.LogDebug("Successfully registered {EventCount} event types.", routingByType.Count);
     }
 
     public EventRouting GetRouting(Type eventType)

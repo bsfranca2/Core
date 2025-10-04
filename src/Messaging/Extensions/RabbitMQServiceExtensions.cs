@@ -1,6 +1,4 @@
-
 using Bsfranca2.Core;
-using Bsfranca2.Messaging.Configurations;
 using Bsfranca2.Messaging.Contracts;
 using Bsfranca2.Messaging.Providers.RabbitMQ;
 
@@ -15,18 +13,18 @@ public static class RabbitMQServiceExtensions
         string connectionString,
         Action<IRabbitMQRegistrationContext>? configure = null)
     {
-        RabbitMQRegistrationContext rabbitMqContext = new();
+        RabbitMQRegistrationContext rabbitMqContext = new(context.Options) { ConnectionString = connectionString };
+
         configure?.Invoke(rabbitMqContext);
 
-        context.Options.ConnectionString = connectionString;
-        ApplyDefaultTopologyConfiguration(context.Options);
+        context.Options.ConnectionString = rabbitMqContext.ConnectionString;
 
         context.AddSingleton<RabbitMQConnectionFactory>();
         context.AddSingleton<IEventRoutingRegistry, RabbitMQEventRoutingRegistry>();
         context.AddSingleton<IInfrastructureManager, RabbitMQInfrastructureManager>();
 
         context.AddScoped<IEventPublisher, RabbitMQEventPublisher>();
-        
+
         if (rabbitMqContext.SetupInfrastructure)
         {
             context.AddHostedService<InfrastructureInitializationService>();
@@ -47,27 +45,5 @@ public static class RabbitMQServiceExtensions
         }
 
         return context;
-    }
-
-    private static MessagingOptions ApplyDefaultTopologyConfiguration(MessagingOptions options)
-    {
-        foreach (ExchangeConfiguration exchange in RabbitMQMessagingTopology.ExchangeConfigurations)
-        {
-            if (options.Exchanges.All(e => e.Name != exchange.Name))
-            {
-                options.Exchanges.Add(exchange);
-            }
-        }
-
-        List<QueueConfiguration> defaultQueues = RabbitMQMessagingTopology.QueueConfigurations;
-        foreach (QueueConfiguration queue in defaultQueues)
-        {
-            if (options.Queues.All(q => q.Name != queue.Name))
-            {
-                options.Queues.Add(queue);
-            }
-        }
-
-        return options;
     }
 }
