@@ -1,3 +1,5 @@
+using Testcontainers.RabbitMq;
+
 namespace Bsfranca2.Messaging.Tests;
 
 public sealed class RabbitMqFixture : IAsyncLifetime

@@ -1,3 +1,7 @@
+using RabbitMQ.Client;
+
+using ExchangeType = Bsfranca2.Messaging.Configurations.ExchangeType;
+
 namespace Bsfranca2.Messaging.Tests;
 
 [Collection("RabbitMq")]
@@ -38,8 +42,8 @@ public sealed class RabbitMQInfrastructureManagerTests
             Uri = new Uri(_fixture.ConnectionString)
         };
 
-        using IConnection connection = factory.CreateConnection();
-        using IChannel channel = connection.CreateChannel();
+        await using IConnection connection = await factory.CreateConnectionAsync();
+        await using IChannel channel = await connection.CreateChannelAsync();
 
         await manager.EnsureInfrastructureAsync(channel);
 
@@ -75,8 +79,8 @@ public sealed class RabbitMQInfrastructureManagerTests
             Uri = new Uri(_fixture.ConnectionString)
         };
 
-        using IConnection connection = factory.CreateConnection();
-        using IChannel channel = connection.CreateChannel();
+        await using IConnection connection = await factory.CreateConnectionAsync();
+        await using IChannel channel = await connection.CreateChannelAsync();
 
         await manager.EnsureInfrastructureAsync(channel);
         await manager.EnsureInfrastructureAsync(channel);

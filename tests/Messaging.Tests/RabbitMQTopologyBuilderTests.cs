@@ -1,3 +1,5 @@
+using ExchangeType = Bsfranca2.Messaging.Configurations.ExchangeType;
+
 namespace Bsfranca2.Messaging.Tests;
 
 public class RabbitMQTopologyBuilderTests

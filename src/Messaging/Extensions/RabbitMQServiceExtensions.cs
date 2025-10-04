@@ -1,4 +1,4 @@
-
+using Bsfranca2.Core;
 using Bsfranca2.Messaging.Contracts;
 using Bsfranca2.Messaging.Providers.RabbitMQ;
 
@@ -13,10 +13,7 @@ public static class RabbitMQServiceExtensions
         string connectionString,
         Action<IRabbitMQRegistrationContext>? configure = null)
     {
-        RabbitMQRegistrationContext rabbitMqContext = new(context.Options)
-        {
-            ConnectionString = connectionString
-        };
+        RabbitMQRegistrationContext rabbitMqContext = new(context.Options) { ConnectionString = connectionString };
 
         configure?.Invoke(rabbitMqContext);
 
@@ -27,7 +24,7 @@ public static class RabbitMQServiceExtensions
         context.AddSingleton<IInfrastructureManager, RabbitMQInfrastructureManager>();
 
         context.AddScoped<IEventPublisher, RabbitMQEventPublisher>();
-        
+
         if (rabbitMqContext.SetupInfrastructure)
         {
             context.AddHostedService<InfrastructureInitializationService>();

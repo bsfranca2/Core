@@ -11,7 +11,7 @@ public class RabbitMQEventRoutingRegistryTests
 
         RabbitMQEventRoutingRegistry registry = new(NullLogger<RabbitMQEventRoutingRegistry>.Instance, options);
 
-        EventRouting resolved = registry.GetRouting(typeof(TestEvent));
+        EventRouting resolved = registry.GetRouting<TestEvent>();
         Assert.Equal(routing, resolved);
 
         bool found = registry.TryGetEventType(nameof(TestEvent), out Type? resolvedType);
@@ -35,7 +35,7 @@ public class RabbitMQEventRoutingRegistryTests
     {
         RabbitMQEventRoutingRegistry registry = new(NullLogger<RabbitMQEventRoutingRegistry>.Instance, new MessagingOptions());
 
-        Assert.Throws<KeyNotFoundException>(() => registry.GetRouting(typeof(TestEvent)));
+        Assert.Throws<KeyNotFoundException>(() => registry.GetRouting<TestEvent>());
     }
 
     private sealed class TestEvent : IEvent
