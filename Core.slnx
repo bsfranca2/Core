@@ -8,4 +8,7 @@
     <Project Path="src/Core/Core.csproj" />
     <Project Path="src/Messaging/Messaging.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Messaging.Tests/Messaging.Tests.csproj" />
+  </Folder>
 </Solution>

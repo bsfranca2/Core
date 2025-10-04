@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Bsfranca2.Messaging.Configurations;
 
 public class MessagingOptions
@@ -5,6 +8,7 @@ public class MessagingOptions
     public string ConnectionString { get; set; } = string.Empty;
     public List<ExchangeConfiguration> Exchanges { get; set; } = new();
     public List<QueueConfiguration> Queues { get; set; } = new();
+    public Dictionary<Type, EventRouting> EventRouting { get; set; } = new();
 }
 
 public class ExchangeConfiguration

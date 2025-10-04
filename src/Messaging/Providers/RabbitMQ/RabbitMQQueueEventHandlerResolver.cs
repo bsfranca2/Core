@@ -1,24 +1,32 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using Bsfranca2.Messaging.Configurations;
 using Bsfranca2.Messaging.Contracts;
 
 namespace Bsfranca2.Messaging.Providers.RabbitMQ;
 
-public class RabbitMQQueueEventHandlerResolver : IQueueEventHandlerResolver
+public sealed class RabbitMQQueueEventHandlerResolver(MessagingOptions options) : IQueueEventHandlerResolver
 {
+    private readonly MessagingOptions _options = options;
+
     public IEnumerable<Type> GetEventTypesForQueue(string queueName)
     {
-        QueueConfiguration? queueConfig = RabbitMQMessagingTopology.QueueConfigurations
-            .FirstOrDefault(q => q.Name == queueName);
+        QueueConfiguration? queueConfig = _options.Queues
+            .FirstOrDefault(q => string.Equals(q.Name, queueName, StringComparison.OrdinalIgnoreCase));
 
-        if (string.IsNullOrEmpty(queueConfig?.ExchangeName) || string.IsNullOrEmpty(queueConfig.RoutingKey))
+        if (queueConfig is null ||
+            string.IsNullOrWhiteSpace(queueConfig.ExchangeName) ||
+            string.IsNullOrWhiteSpace(queueConfig.RoutingKey))
         {
-            return [];
+            return Enumerable.Empty<Type>();
         }
 
-        IEnumerable<Type> eventTypes = RabbitMQMessagingTopology.EventMappings
+        IEnumerable<Type> eventTypes = _options.EventRouting
             .Where(mapping =>
-                mapping.Value.ExchangeName == queueConfig.ExchangeName &&
-                mapping.Value.RoutingKey == queueConfig.RoutingKey)
+                string.Equals(mapping.Value.ExchangeName, queueConfig.ExchangeName, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(mapping.Value.RoutingKey, queueConfig.RoutingKey, StringComparison.OrdinalIgnoreCase))
             .Select(mapping => mapping.Key);
 
         return eventTypes.ToList();

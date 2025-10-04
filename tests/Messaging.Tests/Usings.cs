@@ -1,0 +1,11 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Bsfranca2.Core;
+global using Bsfranca2.Messaging.Configurations;
+global using Bsfranca2.Messaging.Providers.RabbitMQ;
+global using Microsoft.Extensions.Logging.Abstractions;
+global using RabbitMQ.Client;
+global using Testcontainers.RabbitMq;
+global using Xunit;
