@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <Authors>Bruno França</Authors>
     <PackageId>Bsfranca2.Core</PackageId>
     <Description>Core library com abstrações e contratos base (IEntity, IRepository, ICommand, etc.)</Description>
